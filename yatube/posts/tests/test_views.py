@@ -280,7 +280,7 @@ class FollowViewsTest(TestCase):
         self.authorized_client.force_login(self.user1)
 
     def test_auth_user_follow(self):
-        '''Авторизованный пользователь может подписываться 
+        '''Авторизованный пользователь может подписываться
         на других пользователей и удалять их из подписок'''
         follow_count = Follow.objects.count()
         Follow.objects.create(user=self.user1, author=self.user)
@@ -292,7 +292,7 @@ class FollowViewsTest(TestCase):
         self.assertEqual(Follow.objects.count(), 0)
 
     def test_post_views_follow_user(self):
-        '''Новая запись пользователя появляется в ленте тех, 
+        '''Новая запись пользователя появляется в ленте тех,
         кто на него подписан и не появляется в ленте тех, кто не подписан'''
         Follow.objects.create(user=self.user1, author=self.user)
         response = self.authorized_client.get(reverse('posts:follow_index'))
