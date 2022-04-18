@@ -147,12 +147,11 @@ def add_comment(request, post_id):
     return redirect('posts:post_detail', post_id=post_id)
 
 
-@login_required
+@login_required  # Доступно авторизированым пользователям
 def follow_index(request):
     template = 'posts/follow.html'
     user = request.user
-    authors = user.follower.values_list('author', flat=True)
-    posts = Post.objects.filter(author__id__in=authors)
+    posts = Post.objects.filter(author__following__user=user)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -163,7 +162,7 @@ def follow_index(request):
     return render(request, template, context)
 
 
-@login_required
+@login_required  # Доступно авторизированым пользователям
 def profile_follow(request, username):
     '''Подписаться на автора'''
     author = User.objects.get(username=username)
@@ -174,9 +173,9 @@ def profile_follow(request, username):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@login_required
+@login_required  # Доступно авторизированым пользователям
 def profile_unfollow(request, username):
     '''Отписаться на автора'''
     user = request.user
-    Follow.objects.get(user=user, author__username=username).delete()
+    Follow.objects.filter(user=user, author__username=username).delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

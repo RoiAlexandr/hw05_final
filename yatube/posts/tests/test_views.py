@@ -279,15 +279,25 @@ class FollowViewsTest(TestCase):
         self.authorized_client.force_login(self.user)
         self.authorized_client.force_login(self.user1)
 
-    def test_auth_user_follow_and_new_post_view(self):
-        '''Авторизованный пользователь может подписываться на
-        других пользователей и удалять их из подписок,
-        новая запись пользователя появляется в ленте тех,
-        кто на него подписан и не появляется в ленте тех, кто не подписан.'''
+    def test_auth_user_follow(self):
+        '''Авторизованный пользователь может подписываться 
+        на других пользователей и удалять их из подписок'''
+        follow_count = Follow.objects.count()
         Follow.objects.create(user=self.user1, author=self.user)
-        response = self.authorized_client.get('/follow/')
+        # Проверяем, увеличилось ли колличество подпищиков
+        self.assertEqual(Follow.objects.count(), follow_count + 1)
+        Follow.objects.filter(user=self.user1).filter(
+            author=self.user).delete()
+        # Проверяем, уменьшилось ли количество подпищиков
+        self.assertEqual(Follow.objects.count(), 0)
+
+    def test_post_views_follow_user(self):
+        '''Новая запись пользователя появляется в ленте тех, 
+        кто на него подписан и не появляется в ленте тех, кто не подписан'''
+        Follow.objects.create(user=self.user1, author=self.user)
+        response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertContains(response, 'Тестируем подписки')
         Follow.objects.filter(user=self.user1).filter(
             author=self.user).delete()
-        response = self.authorized_client.get('/follow/')
+        response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertNotContains(response, 'Тестируем подписки')

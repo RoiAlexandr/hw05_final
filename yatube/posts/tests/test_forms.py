@@ -7,7 +7,9 @@ from django.urls import reverse
 from django.conf import settings
 from posts.models import Post, Group, Comment
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
+
 
 # Создаем временную папку для медиа-файлов;
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
