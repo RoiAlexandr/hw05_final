@@ -125,7 +125,7 @@ class PostFormTest(TestCase):
             'text': 'Тестовый комментарий',
         }
         # Отправляем POST-запрос
-        response = self.guest_client.post(
+        self.guest_client.post(
             reverse('posts:add_comment', kwargs={
                 'post_id': self.post.id}),
             data=form_data,

@@ -280,9 +280,9 @@ class FollowViewsTest(TestCase):
         self.authorized_client.force_login(self.user1)
 
     def test_auth_user_follow_and_new_post_view(self):
-        '''Авторизованный пользователь может подписываться на 
+        '''Авторизованный пользователь может подписываться на
         других пользователей и удалять их из подписок,
-        новая запись пользователя появляется в ленте тех, 
+        новая запись пользователя появляется в ленте тех,
         кто на него подписан и не появляется в ленте тех, кто не подписан.'''
         Follow.objects.create(user=self.user1, author=self.user)
         response = self.authorized_client.get('/follow/')
