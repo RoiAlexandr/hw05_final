@@ -280,15 +280,25 @@ class FollowViewsTest(TestCase):
         self.authorized_client.force_login(self.user1)
 
     def test_auth_user_follow(self):
-        '''Авторизованный пользователь может подписываться
-        на других пользователей и удалять их из подписок'''
+        '''Проверяем что пользователь может подписаться на автора'''
+        follow_count = Follow.objects.count()
+        self.authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': self.user}
+        )
+        )
+        self.assertEqual(Follow.objects.count(), follow_count + 1)
+
+    def test_auth_user_unfollow(self):
+        '''Проверяем что пользователь может отписаться от автора'''
         follow_count = Follow.objects.count()
         Follow.objects.create(user=self.user1, author=self.user)
-        # Проверяем, увеличилось ли колличество подпищиков
         self.assertEqual(Follow.objects.count(), follow_count + 1)
-        Follow.objects.filter(user=self.user1).filter(
-            author=self.user).delete()
-        # Проверяем, уменьшилось ли количество подпищиков
+        self.authorized_client.get(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': self.user}
+        )
+        )
         self.assertEqual(Follow.objects.count(), 0)
 
     def test_post_views_follow_user(self):
